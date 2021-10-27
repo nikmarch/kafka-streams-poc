@@ -51,3 +51,9 @@ services:
       - ksqldb-server
     entrypoint: /bin/sh
     tty: true
+  rspec_container:
+    build:
+      context: .
+      dockerfile: Dockerfile-rspec
+    depends_on:
+      - broker
