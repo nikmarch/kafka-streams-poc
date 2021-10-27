@@ -1,0 +1,60 @@
+- uuid: 7CFA44CC-7149-4496-B0D1-8933C0616139
+  shop: us
+  addresses:
+    - full_address: John Doe 123 first St. Apt A San Jose CA, 20112
+    - full_address: John Doe 4566 2nd St. Apt A Springfield WA, 80112
+  test_cases:
+    - john doe 20112
+    - john doe second street 80112
+
+- uuid: 5FB37F07-F2EA-402E-8148-BFACAFF15605
+  shop: us
+  addresses:
+    - full_address: John Castilio 123 Main St. Apt A New Haule Ranch CA, 80212
+    - full_address: John Castilio 9 Portabello Ave Fontana PR, 44044
+  test_cases:
+    - john castilio
+    - john 44044 portabello
+
+- uuid: A79E7862-6300-4F88-B644-3712D0A31BC8
+  shop: us
+  addresses:
+    - full_address: John Protapovich 50 Joes Pl W Hollywood CA, 90210
+  test_cases:
+    - protapovich 90210
+    - 50 joes place
+    - 50 joe's place
+    - 50 joes  90210
+    - protapovich west hollywood
+
+- uuid: 44EFD86C-5E8F-4EA8-BD42-E4B6B353AF4C
+  shop: us
+  addresses:
+    - full_address: Helena Wiskey 50 Joes Pl W Hollywood CA, 90210
+  test_cases:
+    - helena wiskey
+    - 50 joes place 90210
+    - 50 joe's place 90210
+    - 50 joes pl 90210
+    - 50 joes pl wiskey
+    - 50 joes pl west hollywood
+
+- uuid: 19054340-D753-4641-89CE-51599284A494
+  shop: uk
+  addresses:
+    - full_address: Gregory Wiskey 50 joe's Pl W Hollywood CA, 90210
+  test_cases:
+    - gregory wiskey
+    - 50 joes place 90210
+    - 50 joe's place 90210
+    - 50 joes pl 90210
+    - 50 joes pl wiskey
+
+- uuid: EAABCC2F-4D24-45A1-BC84-D395E1441C9D
+  shop: uk
+  addresses:
+    - full_address: Helena Wiskey 4215 W loraine st apt 123 N. Glendale WA 90278
+  test_cases:
+    - helena Wiskey
+    - wiskey glendale
+    - helena north glendale

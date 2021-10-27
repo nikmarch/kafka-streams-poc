@@ -51,7 +51,8 @@ services:
       - ksqldb-server
     entrypoint: /bin/sh
     tty: true
-  rspec_container:
+  poc_helpers:
+    container_name: poc_helpers
     build:
       context: .
       dockerfile: Dockerfile-rspec
