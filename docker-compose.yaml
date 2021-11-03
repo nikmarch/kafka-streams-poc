@@ -29,34 +29,12 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
-  ksqldb-server:
-    image: confluentinc/ksqldb-server:0.21.0
-    hostname: ksqldb-server
-    container_name: ksqldb-server
-    depends_on:
-      - broker
-    ports:
-      - "8088:8088"
-    environment:
-      KSQL_LISTENERS: http://0.0.0.0:8088
-      KSQL_BOOTSTRAP_SERVERS: broker:9092
-      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
-      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
-
-  ksqldb-cli:
-    image: confluentinc/ksqldb-cli:0.21.0
-    container_name: ksqldb-cli
-    depends_on:
-      - broker
-      - ksqldb-server
-    entrypoint: /bin/sh
-    tty: true
   poc_helpers:
     container_name: poc_helpers
     build:
       context: .
-      dockerfile: Dockerfile-rspec
+      dockerfile: Dockerfile-provisioner
     volumes:
-      - .:/app
+      - ./provision/:/app
     depends_on:
       - broker

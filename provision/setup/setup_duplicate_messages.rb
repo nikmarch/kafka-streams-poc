@@ -2,7 +2,7 @@ require 'yaml'
 require_relative '../lib/kafka_producer.rb'
 
 pusher = KafkaProducer.new('customers')
-customers = YAML.load(File.read('../test_cases/customers.yaml'))
+customers = YAML.load(File.read('./test_cases/customers.yaml'))
 dup_nums = 7
 
 puts "Unique customer number: #{customers.size}"
