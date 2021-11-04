@@ -19,6 +19,7 @@ class DeduplicationTransformer
   java_import 'org.apache.kafka.streams.kstream.KStream'
   java_import 'org.apache.kafka.streams.kstream.KeyValueMapper'
   java_import 'org.apache.kafka.streams.kstream.Transformer'
+  java_import 'org.apache.kafka.streams.kstream.TransformerSupplier'
   java_import 'org.apache.kafka.streams.processor.ProcessorContext'
   java_import 'org.apache.kafka.streams.state.StoreBuilder'
   java_import 'org.apache.kafka.streams.state.Stores'
@@ -27,6 +28,35 @@ class DeduplicationTransformer
 
   attr_accessor :streams
 
+    class MyTransformer
+      include Transformer
+
+      def init(context)
+        puts 'inside MyTransformer'
+        @context = context
+        @state = context.getStateStore("myTransformState")
+      end
+
+      def transform(key, value)
+        puts "key: #{key}"
+        puts "value: #{value}"
+        KeyValue.new(key, value)
+      end
+
+      def close
+
+      end
+    end
+
+
+    class MyTransformerSupplier
+      include TransformerSupplier
+
+      def get
+        puts 'inside MyTransformerSupplier'
+        MyTransformer.new
+      end
+    end
   def start
     # temp_directory = Dir.mktmpdir('example')
     # puts "Temp directory: #{temp_directory}"
@@ -48,34 +78,39 @@ class DeduplicationTransformer
 
     create_streams(props)
 
+    streams.start()
+
     # at_exit do
     #   puts "\nClosing Streams"
     #   streams.close()
     #   # puts "Deleting temp directory: #{temp_directory}"
     #   # FileUtils.remove_dir(temp_directory)
     # end
-
-    streams.start()
   end
 
   def create_streams(streams_configuration)
     builder = StreamsBuilder.new
 
-    # self.shipments_table = builder.table('example-shipments', Consumed.with(Serdes.String(), avro_serde), Materialized.as('shipments-by-guid'))
-
-    # topology = builder.build()
-    # puts topology.describe()
-
-    builder.stream('customers')
-      .map_values do |k,v|
-        puts "k: #{k}"
-        puts "v: #{v}"
-        v
-      end
-      .to('deduplicated_customers')
-      #
     # binding.pry
-    self.streams = KafkaStreams.new(builder.build, streams_configuration)
+    # builder.stream('customers')
+      # .map_values do |k,v|
+      #   puts "k: #{k}"
+      #   puts "v: #{v}"
+      #   sleep 1
+      #   v
+      # end
+      # .to('deduplicated_customers')
+    puts 'before stram'
+    builder.stream('customers')
+      .transform(MyTransformerSupplier.new, 'opa')
+      .to('deduplicated_customers')
+    puts 'after stram'
+
+    topology = builder.build()
+    puts topology.describe()
+
+    self.streams = KafkaStreams.new(topology, streams_configuration)
+
     puts "Streams started"
     rescue => e
     puts e
