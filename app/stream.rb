@@ -10,6 +10,7 @@ class DeduplicationTransformer
   # java_import 'org.apache.kafka.streams.StreamsBuilder'
   # java_import 'org.apache.kafka.streams.StreamsConfig'
   java_import 'java.util.Properties'
+  java_import 'java.time.Duration'
   java_import 'org.apache.kafka.common.serialization.Serdes'
   java_import 'org.apache.kafka.common.serialization.StringDeserializer'
   java_import 'org.apache.kafka.common.serialization.StringSerializer'
@@ -90,6 +91,19 @@ class DeduplicationTransformer
 
   def create_streams(streams_configuration)
     builder = StreamsBuilder.new
+    windowSize = Duration.ofMinutes(10);
+
+    retentionPeriod = windowSize
+    dedupStoreBuilder = Stores.windowStoreBuilder(
+            Stores.persistentWindowStore('opa',
+                                         retentionPeriod,
+                                         windowSize,
+                                         false
+            ),
+            Serdes.String(),
+            Serdes.Long())
+
+    builder.addStateStore(dedupStoreBuilder)
 
     # binding.pry
     # builder.stream('customers')
