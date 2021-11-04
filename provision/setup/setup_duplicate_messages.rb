@@ -10,3 +10,6 @@ customers.map do |customer|
   dup_nums.times { pusher.push_customer customer }
   puts "customer: #{customer.fetch('uuid')} pushed #{dup_nums}"
 end
+# create output topic
+pusher = KafkaProducer.new('deduplicated_customers')
+pusher.push_customer customers.first
