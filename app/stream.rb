@@ -33,16 +33,41 @@ class DeduplicationTransformer
   class MyTransformer
     include Transformer
 
+    def initialize(maintain_duration_per_message_in_ms)
+      @left_duration_in_ms = maintain_duration_per_message_in_ms / 2
+      @right_duration_in_ms = maintain_duration_per_message_in_ms - @left_duration_in_ms
+    end
+
     def init(context)
-      puts 'inside MyTransformer'
       @context = context
-      @state = context.getStateStore(DeduplicationTransformer::store_name)
+      @store = context.getStateStore(DeduplicationTransformer::store_name)
     end
 
     def transform(key, value)
-      puts "key: #{key}"
-      puts "value: #{value}"
-      KeyValue.new(key, value)
+      if is_duplicate(key)
+        output = nil
+        update_timestamp_of_existing_message_to_prevent_expiry(key, @context.timestamp)
+      else
+        output = KeyValue.new(key, value)
+        remember_new_message(key, @context.timestamp)
+      end
+      output
+    end
+
+    def is_duplicate(key)
+      event_time = @context.timestamp
+      time_iterator = @store.fetch(key, event_time - @left_duration_in_ms, event_time + @right_duration_in_ms)
+      is_duplicate = time_iterator.has_next
+      time_iterator.close
+      is_duplicate
+    end
+
+    def update_timestamp_of_existing_message_to_prevent_expiry(key, new_timestamp)
+      @store.put(key, new_timestamp, new_timestamp)
+    end
+
+    def remember_new_message(key, timestamp)
+      @store.put(key, timestamp, timestamp)
     end
 
     def close
@@ -54,9 +79,12 @@ class DeduplicationTransformer
   class MyTransformerSupplier
     include TransformerSupplier
 
+    def initialize(maintain_duration_per_message_in_ms)
+      @maintain_duration_per_message_in_ms = maintain_duration_per_message_in_ms
+    end
+
     def get
-      puts 'inside MyTransformerSupplier'
-      MyTransformer.new
+      MyTransformer.new(@maintain_duration_per_message_in_ms)
     end
   end
   def start
@@ -70,13 +98,7 @@ class DeduplicationTransformer
     props.put(StreamsConfig::BOOTSTRAP_SERVERS_CONFIG, 'localhost:29092')
     props.put(StreamsConfig::DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass())
     props.put(StreamsConfig::DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass())
-    # if port
-    #   props.put(StreamsConfig::APPLICATION_SERVER_CONFIG, "localhost:#{port}")
-    # end
     # props.put(StreamsConfig::STATE_DIR_CONFIG, temp_directory)
-
-    puts "Config Properties:"
-    pp props
 
     create_streams(props)
 
@@ -92,7 +114,7 @@ class DeduplicationTransformer
 
   def create_streams(streams_configuration)
     builder = StreamsBuilder.new
-    windowSize = Duration.ofMinutes(10);
+    windowSize = Duration.ofSeconds(40);
 
     retentionPeriod = windowSize
     dedupStoreBuilder = Stores.windowStoreBuilder(
@@ -107,26 +129,15 @@ class DeduplicationTransformer
     builder.addStateStore(dedupStoreBuilder)
 
     # binding.pry
-    # builder.stream('customers')
-    # .map_values do |k,v|
-    #   puts "k: #{k}"
-    #   puts "v: #{v}"
-    #   sleep 1
-    #   v
-    # end
-    # .to('deduplicated_customers')
-    puts 'before stram'
     builder.stream('customers')
-      .transform(MyTransformerSupplier.new, DeduplicationTransformer::store_name)
+      .transform(MyTransformerSupplier.new(windowSize.toMillis), DeduplicationTransformer::store_name)
       .to('deduplicated_customers')
-    puts 'after stram'
 
     topology = builder.build()
     puts topology.describe()
 
     self.streams = KafkaStreams.new(topology, streams_configuration)
 
-    puts "Streams started"
   rescue => e
     puts e
   end
