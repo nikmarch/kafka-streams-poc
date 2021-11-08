@@ -5,10 +5,7 @@ require 'java'
 require 'jbundler'
 
 class DeduplicationTransformer
-  # java_import 'org.apache.kafka.common.serialization.Serdes'
   java_import 'org.apache.kafka.streams.KafkaStreams'
-  # java_import 'org.apache.kafka.streams.StreamsBuilder'
-  # java_import 'org.apache.kafka.streams.StreamsConfig'
   java_import 'java.util.Properties'
   java_import 'java.time.Duration'
   java_import 'org.apache.kafka.common.serialization.Serdes'
@@ -29,35 +26,39 @@ class DeduplicationTransformer
 
   attr_accessor :streams
 
-    class MyTransformer
-      include Transformer
+  def self.store_name
+    'event_id_store'
+  end
 
-      def init(context)
-        puts 'inside MyTransformer'
-        @context = context
-        @state = context.getStateStore("myTransformState")
-      end
+  class MyTransformer
+    include Transformer
 
-      def transform(key, value)
-        puts "key: #{key}"
-        puts "value: #{value}"
-        KeyValue.new(key, value)
-      end
-
-      def close
-
-      end
+    def init(context)
+      puts 'inside MyTransformer'
+      @context = context
+      @state = context.getStateStore(DeduplicationTransformer::store_name)
     end
 
-
-    class MyTransformerSupplier
-      include TransformerSupplier
-
-      def get
-        puts 'inside MyTransformerSupplier'
-        MyTransformer.new
-      end
+    def transform(key, value)
+      puts "key: #{key}"
+      puts "value: #{value}"
+      KeyValue.new(key, value)
     end
+
+    def close
+
+    end
+  end
+
+
+  class MyTransformerSupplier
+    include TransformerSupplier
+
+    def get
+      puts 'inside MyTransformerSupplier'
+      MyTransformer.new
+    end
+  end
   def start
     # temp_directory = Dir.mktmpdir('example')
     # puts "Temp directory: #{temp_directory}"
@@ -95,28 +96,28 @@ class DeduplicationTransformer
 
     retentionPeriod = windowSize
     dedupStoreBuilder = Stores.windowStoreBuilder(
-            Stores.persistentWindowStore('opa',
-                                         retentionPeriod,
-                                         windowSize,
-                                         false
-            ),
-            Serdes.String(),
-            Serdes.Long())
+      Stores.persistentWindowStore(DeduplicationTransformer::store_name,
+                                   retentionPeriod,
+                                   windowSize,
+                                   false
+                                  ),
+                                  Serdes.String(),
+                                  Serdes.Long())
 
     builder.addStateStore(dedupStoreBuilder)
 
     # binding.pry
     # builder.stream('customers')
-      # .map_values do |k,v|
-      #   puts "k: #{k}"
-      #   puts "v: #{v}"
-      #   sleep 1
-      #   v
-      # end
-      # .to('deduplicated_customers')
+    # .map_values do |k,v|
+    #   puts "k: #{k}"
+    #   puts "v: #{v}"
+    #   sleep 1
+    #   v
+    # end
+    # .to('deduplicated_customers')
     puts 'before stram'
     builder.stream('customers')
-      .transform(MyTransformerSupplier.new, 'opa')
+      .transform(MyTransformerSupplier.new, DeduplicationTransformer::store_name)
       .to('deduplicated_customers')
     puts 'after stram'
 
@@ -126,7 +127,7 @@ class DeduplicationTransformer
     self.streams = KafkaStreams.new(topology, streams_configuration)
 
     puts "Streams started"
-    rescue => e
+  rescue => e
     puts e
   end
 end
