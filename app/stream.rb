@@ -23,6 +23,7 @@ class DeduplicationTransformer
   java_import 'org.apache.kafka.streams.state.Stores'
   java_import 'org.apache.kafka.streams.state.WindowStore'
   java_import 'org.apache.kafka.streams.state.WindowStoreIterator'
+  java_import 'org.apache.commons.codec.digest.DigestUtils'
 
   attr_accessor :streams
 
@@ -44,14 +45,20 @@ class DeduplicationTransformer
     end
 
     def transform(key, value)
-      if is_duplicate(key)
+      hesh_key = generate_hesh_key(value)
+
+      if is_duplicate(hesh_key)
         output = nil
-        update_timestamp_of_existing_message_to_prevent_expiry(key, @context.timestamp)
+        update_timestamp_of_existing_message_to_prevent_expiry(hesh_key, @context.timestamp)
       else
         output = KeyValue.new(key, value)
-        remember_new_message(key, @context.timestamp)
+        remember_new_message(hesh_key, @context.timestamp)
       end
       output
+    end
+
+    def generate_hesh_key(value)
+      DigestUtils.md5Hex(value)
     end
 
     def is_duplicate(key)
@@ -114,7 +121,7 @@ class DeduplicationTransformer
 
   def create_streams(streams_configuration)
     builder = StreamsBuilder.new
-    windowSize = Duration.ofSeconds(40);
+    windowSize = Duration.ofSeconds(20);
 
     retentionPeriod = windowSize
     dedupStoreBuilder = Stores.windowStoreBuilder(

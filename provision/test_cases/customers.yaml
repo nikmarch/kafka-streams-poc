@@ -64,3 +64,33 @@
     - helena Wiskey
     - wiskey glendale
     - helena north glendale
+
+- uuid: 7CFA44CC-7149-4496-B0D1-8933C0616139
+  id: 1000
+  shop: us
+  addresses:
+    - full_address: John Doe 123 first St. Apt b San Jose CA, 20112
+    - full_address: John Doe 4566 2nd St. Apt A Springfield WA, 80112
+  test_cases:
+    - john doe 20112
+    - john doe second street 80112
+
+- uuid: 7CFA44CC-7149-4496-B0D1-8933C0616139
+  id: 1000
+  shop: us
+  addresses:
+    - full_address: John Doe 23 first St. Apt A San Jose CA, 20112
+    - full_address: John Doe 4566 2nd St. Apt A Springfield WA, 80112
+  test_cases:
+    - john doe 20112
+    - john doe second street 80112
+
+- uuid: 7CFA44CC-7149-4496-B0D1-8933C0616139
+  id: 1000
+  shop: us
+  addresses:
+    - full_address: John Doe 123 first St. Apt A San Jose CA, 20112
+    - full_address: John Doe 4566 2nd St. Apt A Springfield WA, 80112
+  test_cases:
+    - john doe 20112
+    - john doe second street 80112

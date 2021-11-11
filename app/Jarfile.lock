@@ -7,6 +7,7 @@
 - com.fasterxml.jackson.core:jackson-annotations:jar:2.12.3
 - org.lz4:lz4-java:jar:1.7.1
 - org.slf4j:slf4j-simple:jar:2.0.0-alpha5
+- org.glassfish.external:commons-codec-repackaged:jar:10.0-b28
 - org.rocksdb:rocksdbjni:jar:6.19.3
 - org.slf4j:slf4j-api:jar:2.0.0-alpha5
 - javax.ws.rs:javax.ws.rs-api:jar:2.1.1

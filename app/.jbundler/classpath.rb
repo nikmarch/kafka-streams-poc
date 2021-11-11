@@ -12,6 +12,7 @@ JBUNDLER_CLASSPATH << (JBUNDLER_LOCAL_REPO + '/com/fasterxml/jackson/core/jackso
 JBUNDLER_CLASSPATH << (JBUNDLER_LOCAL_REPO + '/com/fasterxml/jackson/core/jackson-annotations/2.12.3/jackson-annotations-2.12.3.jar')
 JBUNDLER_CLASSPATH << (JBUNDLER_LOCAL_REPO + '/org/lz4/lz4-java/1.7.1/lz4-java-1.7.1.jar')
 JBUNDLER_CLASSPATH << (JBUNDLER_LOCAL_REPO + '/org/slf4j/slf4j-simple/2.0.0-alpha5/slf4j-simple-2.0.0-alpha5.jar')
+JBUNDLER_CLASSPATH << (JBUNDLER_LOCAL_REPO + '/org/glassfish/external/commons-codec-repackaged/10.0-b28/commons-codec-repackaged-10.0-b28.jar')
 JBUNDLER_CLASSPATH << (JBUNDLER_LOCAL_REPO + '/org/rocksdb/rocksdbjni/6.19.3/rocksdbjni-6.19.3.jar')
 JBUNDLER_CLASSPATH << (JBUNDLER_LOCAL_REPO + '/org/slf4j/slf4j-api/2.0.0-alpha5/slf4j-api-2.0.0-alpha5.jar')
 JBUNDLER_CLASSPATH << (JBUNDLER_LOCAL_REPO + '/javax/ws/rs/javax.ws.rs-api/2.1.1/javax.ws.rs-api-2.1.1.jar')
