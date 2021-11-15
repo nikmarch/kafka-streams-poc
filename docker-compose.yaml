@@ -38,3 +38,13 @@ services:
       - ./provision/:/app
     depends_on:
       - broker
+
+  stream_app:
+    container_name: stream_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app/:/app
+    depends_on:
+      - broker

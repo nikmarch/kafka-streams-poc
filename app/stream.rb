@@ -1,8 +1,8 @@
+require 'jbundler'
 require 'tmpdir'
 require 'pry'
 require 'fileutils'
 require 'java'
-require 'jbundler'
 
 class DeduplicationTransformer
   java_import 'org.apache.kafka.streams.KafkaStreams'
@@ -45,19 +45,19 @@ class DeduplicationTransformer
     end
 
     def transform(key, value)
-      hesh_key = generate_hesh_key(value)
+      hash_key = generate_hash_key(value)
 
-      if is_duplicate(hesh_key)
+      if is_duplicate(hash_key)
         output = nil
-        update_timestamp_of_existing_message_to_prevent_expiry(hesh_key, @context.timestamp)
+        update_timestamp_of_existing_message_to_prevent_expiry(hash_key, @context.timestamp)
       else
         output = KeyValue.new(key, value)
-        remember_new_message(hesh_key, @context.timestamp)
+        remember_new_message(hash_key, @context.timestamp)
       end
       output
     end
 
-    def generate_hesh_key(value)
+    def generate_hash_key(value)
       DigestUtils.md5Hex(value)
     end
 
@@ -95,17 +95,14 @@ class DeduplicationTransformer
     end
   end
   def start
-    # temp_directory = Dir.mktmpdir('example')
-    # puts "Temp directory: #{temp_directory}"
     puts "Application started"
 
     props = Properties.new
     props.put(StreamsConfig::APPLICATION_ID_CONFIG, 'deduplicated_customers_application_id')
     props.put(StreamsConfig::CLIENT_ID_CONFIG, 'deduplicated_customers_client_id')
-    props.put(StreamsConfig::BOOTSTRAP_SERVERS_CONFIG, 'localhost:29092')
+    props.put(StreamsConfig::BOOTSTRAP_SERVERS_CONFIG, 'broker:29092')
     props.put(StreamsConfig::DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass())
     props.put(StreamsConfig::DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass())
-    # props.put(StreamsConfig::STATE_DIR_CONFIG, temp_directory)
 
     create_streams(props)
 

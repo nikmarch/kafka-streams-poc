@@ -12,3 +12,19 @@ dup_nums.times do |num|
     puts "customer: #{customer.fetch('uuid')} pushed #{num + 1}"
   end
 end
+
+sleep 20
+dup_nums.times do |num|
+  customers.map do |customer|
+    pusher.push_customer customer
+    puts "customer: #{customer.fetch('uuid')} pushed #{num + 1}"
+  end
+end
+
+sleep 20
+dup_nums.times do |num|
+  customers.map do |customer|
+    pusher.push_customer customer
+    puts "customer: #{customer.fetch('uuid')} pushed #{num + 1}"
+  end
+end
