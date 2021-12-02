@@ -3,6 +3,7 @@ require 'tmpdir'
 require 'pry'
 require 'fileutils'
 require 'java'
+require_relative './crc32_partitioner'
 
 class DeduplicationTransformer
   java_import 'org.apache.kafka.streams.KafkaStreams'
@@ -17,6 +18,7 @@ class DeduplicationTransformer
   java_import 'org.apache.kafka.streams.kstream.KStream'
   java_import 'org.apache.kafka.streams.kstream.KeyValueMapper'
   java_import 'org.apache.kafka.streams.kstream.Transformer'
+  java_import 'org.apache.kafka.streams.kstream.Produced'
   java_import 'org.apache.kafka.streams.kstream.TransformerSupplier'
   java_import 'org.apache.kafka.streams.processor.ProcessorContext'
   java_import 'org.apache.kafka.streams.state.StoreBuilder'
@@ -131,12 +133,13 @@ class DeduplicationTransformer
                                   Serdes.String(),
                                   Serdes.Long())
 
+    produced = Produced.with(Serdes.String(), Serdes.String(), CRC32Partitioner.new)
     builder.addStateStore(dedupStoreBuilder)
 
     # binding.pry
     builder.stream('customers')
       .transform(MyTransformerSupplier.new(windowSize.toMillis), DeduplicationTransformer::store_name)
-      .to('deduplicated_customers')
+      .to('deduplicated_customers', produced)
 
     topology = builder.build()
     puts topology.describe()
