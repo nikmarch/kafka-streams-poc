@@ -15,7 +15,7 @@ class ComparePartitionsTest < Test::Unit::TestCase
 
   def test_1
     @expected.keys.each do |key|
-      assert_equal @expected.fetch(key), @actual.fetch(key)
+      assert_equal @expected.fetch(key), @actual.fetch(key), "Not match for key #{key}"
     end
   end
 end
