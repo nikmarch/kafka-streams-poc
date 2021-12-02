@@ -99,7 +99,8 @@ class DeduplicationTransformer
 
     props = Properties.new
     props.put(StreamsConfig::APPLICATION_ID_CONFIG, 'deduplicated_customers_application_id')
-    props.put(StreamsConfig::BOOTSTRAP_SERVERS_CONFIG, 'broker:9092,broker:29092')
+    props.put(StreamsConfig::BOOTSTRAP_SERVERS_CONFIG, 'broker:9092')
+    # props.put(StreamsConfig::BOOTSTRAP_SERVERS_CONFIG, 'broker:9092,broker:29092')
     props.put(StreamsConfig::CLIENT_ID_CONFIG, 'deduplicated_customers_client_id')
     props.put(StreamsConfig::DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass())
     props.put(StreamsConfig::DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass())
