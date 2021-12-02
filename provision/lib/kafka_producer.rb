@@ -5,12 +5,21 @@ class KafkaProducer
   def initialize(topic)
     @topic = topic
     @kafka = Kafka.new("broker:9092", client_id: "console_test")
-    @kafka.create_topic(@topic, num_partitions: 8) unless @kafka.topics.include? @topic
+
     if @kafka.topics.include? "deduplicated_#{@topic}"
       @kafka.delete_topic("deduplicated_#{@topic}")
+      sleep 2
       @kafka.create_topic("deduplicated_#{@topic}", num_partitions: 8)
     else
       @kafka.create_topic("deduplicated_#{@topic}", num_partitions: 8)
+    end
+
+    if @kafka.topics.include? @topic
+      @kafka.delete_topic(@topic)
+      sleep 2
+      @kafka.create_topic(@topic, num_partitions: 8)
+    else
+      @kafka.create_topic(@topic, num_partitions: 8)
     end
   end
 
