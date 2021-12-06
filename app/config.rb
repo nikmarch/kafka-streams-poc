@@ -21,7 +21,7 @@ class Config
   end
 
   def store_name
-    ENV['STORE_NAME']
+    output_topic
   end
 
   def input_topic
