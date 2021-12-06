@@ -1,3 +1,3 @@
 app/pkg
 Session.vim
-./provision/test_cases/production_customers.yaml
+provision/test_cases/production_customers.yaml
