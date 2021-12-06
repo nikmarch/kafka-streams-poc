@@ -8,28 +8,27 @@ class Config
 
   def streams_configuration
     props = Properties.new
-    props.put(StreamsConfig::APPLICATION_ID_CONFIG, 'deduplicated_customers_application_id')
-    props.put(StreamsConfig::BOOTSTRAP_SERVERS_CONFIG, 'broker:9092')
-    # props.put(StreamsConfig::BOOTSTRAP_SERVERS_CONFIG, 'broker:9092,broker:29092')
-    props.put(StreamsConfig::CLIENT_ID_CONFIG, 'deduplicated_customers_client_id')
+    props.put(StreamsConfig::APPLICATION_ID_CONFIG, ENV['APPLICATION_ID_CONFIG'])
+    props.put(StreamsConfig::BOOTSTRAP_SERVERS_CONFIG, ENV['BOOTSTRAP_SERVERS_CONFIG'])
+    props.put(StreamsConfig::CLIENT_ID_CONFIG, ENV['CLIENT_ID_CONFIG'])
     props.put(StreamsConfig::DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass())
     props.put(StreamsConfig::DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass())
     props
   end
 
   def window_size_duration
-    20 # seconds
+    (ENV['WINDOW_SIZE_DURATION_IN_SECONDS'] || 20).to_i
   end
 
   def store_name
-    'deduplication_store'
+    ENV['STORE_NAME']
   end
 
   def input_topic
-    'customers'
+    ENV['INPUT_TOPIC_NAME']
   end
 
   def output_topic
-    'deduplicated_customers'
+    ENV['OUTPUT_TOPIC_NAME']
   end
 end

@@ -48,3 +48,11 @@ services:
       - ./app/:/app
     depends_on:
       - broker
+    environment:
+      APPLICATION_ID_CONFIG: deduplicated_customers_application_id
+      BOOTSTRAP_SERVERS_CONFIG: broker:9092
+      CLIENT_ID_CONFIG: deduplicated_customers_client_id
+      WINDOW_SIZE_DURATION_IN_SECONDS: 20
+      STORE_NAME: deduplication_store
+      INPUT_TOPIC_NAME: customers
+      OUTPUT_TOPIC_NAME: deduplicated_customers
