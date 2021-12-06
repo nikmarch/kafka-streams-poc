@@ -8,5 +8,5 @@ docker-compose up -d
 ./scripts/push_customers.sh
 ./scripts/consume_deduplicated_customers.sh
 cd app
-bundle exec ruby stream.rb
+bundle exec ruby start_stream.rb
 ```
