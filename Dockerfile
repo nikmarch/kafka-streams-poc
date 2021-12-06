@@ -10,4 +10,4 @@ RUN bundle install
 RUN bundle exec jbundle install
 RUN bundle exec jbundle update
 
-CMD bundle exec ruby stream.rb
+CMD bundle exec ruby start_stream.rb
