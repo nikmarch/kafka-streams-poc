@@ -8,17 +8,9 @@ class DeduplicationStream
   java_import 'org.apache.kafka.streams.KafkaStreams'
   java_import 'java.time.Duration'
   java_import 'org.apache.kafka.common.serialization.Serdes'
-  java_import 'org.apache.kafka.common.serialization.StringDeserializer'
-  java_import 'org.apache.kafka.common.serialization.StringSerializer'
   java_import 'org.apache.kafka.streams.StreamsBuilder'
-  java_import 'org.apache.kafka.streams.kstream.KStream'
-  java_import 'org.apache.kafka.streams.kstream.KeyValueMapper'
   java_import 'org.apache.kafka.streams.kstream.Produced'
-  java_import 'org.apache.kafka.streams.processor.ProcessorContext'
-  java_import 'org.apache.kafka.streams.state.StoreBuilder'
   java_import 'org.apache.kafka.streams.state.Stores'
-  java_import 'org.apache.kafka.streams.state.WindowStore'
-  java_import 'org.apache.kafka.streams.state.WindowStoreIterator'
 
   def start
     puts "Application started"
@@ -26,13 +18,6 @@ class DeduplicationStream
     config = Config.new
     streams = create_streams(config)
     streams.start()
-
-    # at_exit do
-    #   puts "\nClosing Streams"
-    #   streams.close()
-    #   # puts "Deleting temp directory: #{temp_directory}"
-    #   # FileUtils.remove_dir(temp_directory)
-    # end
   end
 
   def create_streams(config)
